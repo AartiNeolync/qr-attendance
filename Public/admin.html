@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - QR Attendance</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --ink: #1a1f2e;
+      --muted: #5a6778;
+      --brand: #d97706;
+      --brand-2: #0f766e;
+    }
+    body {
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 500px at 8% 10%, rgba(217, 119, 6, 0.16), transparent 70%),
+        radial-gradient(700px 500px at 92% 20%, rgba(15, 118, 110, 0.16), transparent 70%),
+        linear-gradient(135deg, #f5f8ff 0%, #eef3fb 100%);
+    }
+    .card {
+      border: 0;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 16px 40px rgba(14, 27, 42, 0.12);
+      border-radius: 16px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(217, 119, 6, 0.14);
+      color: var(--brand);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--brand);
+      border-radius: 50%;
+    }
+    .stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #f7f9fc;
+      border: 1px solid rgba(14, 27, 42, 0.06);
+    }
+    .stat .label { color: var(--muted); font-size: 0.9rem; }
+    .stat .value { font-size: 1.4rem; font-weight: 700; }
+    .table thead th { background: #f6f8fc; border-bottom: 0; }
+    .note { color: var(--muted); font-size: 0.92rem; }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-4">
+      <div>
+        <div class="pill mb-2"><span class="pill-dot"></span>Admin Dashboard</div>
+        <h2 class="mb-1">Overview</h2>
+        <div class="note">Real-time attendance and user insights.</div>
+      </div>
+      <div class="d-flex gap-2">
+        <button id="refreshBtn" class="btn btn-outline-secondary">Refresh</button>
+        <button id="logoutBtn" class="btn btn-outline-danger">Logout</button>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-4">
+        <div class="stat">
+          <div>
+            <div class="label">Total Check-ins</div>
+            <div id="statTotal" class="value">-</div>
+          </div>
+          <div class="text-success fw-semibold">All time</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="stat">
+          <div>
+            <div class="label">Today</div>
+            <div id="statToday" class="value">-</div>
+          </div>
+          <div class="text-primary fw-semibold">Today</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="stat">
+          <div>
+            <div class="label">Present</div>
+            <div id="statPresent" class="value">-</div>
+          </div>
+          <div class="text-warning fw-semibold">Status</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-4">
+        <div class="stat">
+          <div>
+            <div class="label">Admins</div>
+            <div id="statAdmins" class="value">-</div>
+          </div>
+          <div class="text-danger fw-semibold">Role</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="stat">
+          <div>
+            <div class="label">Managers</div>
+            <div id="statManagers" class="value">-</div>
+          </div>
+          <div class="text-info fw-semibold">Role</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="stat">
+          <div>
+            <div class="label">Employees</div>
+            <div id="statEmployees" class="value">-</div>
+          </div>
+          <div class="text-secondary fw-semibold">Role</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12 col-lg-7">
+        <div class="card p-3 p-md-4">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <h4 class="mb-1">Latest Attendance</h4>
+              <div class="note">Most recent check-ins.</div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-middle mb-0" id="attendanceTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-5">
+        <div class="card p-3 p-md-4">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <h4 class="mb-1">Users</h4>
+              <div class="note">All registered users.</div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-middle mb-0" id="usersTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin.js" defer></script>
+</body>
+</html>
