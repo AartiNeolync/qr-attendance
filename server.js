@@ -176,7 +176,7 @@ app.get("/setup-admin", async (req, res) => {
         });
 
         res.json({
-            message: "Admin created",
+            message: "Admin created  Neolync",
             email: user.email,
             password
         });
